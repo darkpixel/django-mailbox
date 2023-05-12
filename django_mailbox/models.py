@@ -359,7 +359,7 @@ class Mailbox(models.Model):
             placeholder[
                 settings['attachment_interpolation_header']
             ] = str(attachment.pk)
-            placeholder.body = msg.get_payload(decode=True))
+            placeholder.body = msg.get_payload(decode=True)
             new = placeholder
         else:
             content_charset = msg.get_content_charset()
