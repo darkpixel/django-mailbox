@@ -332,7 +332,7 @@ class Mailbox(models.Model):
                 extension = '.bin'
 
             attachment = MessageAttachment()
-            msg.set_body(BytesIO(msg.get_payload(decode=True)).getvalue())
+            
 
             attachment.document.save(
                 uuid.uuid4().hex + extension,
@@ -351,6 +351,7 @@ class Mailbox(models.Model):
             placeholder[
                 settings['attachment_interpolation_header']
             ] = str(attachment.pk)
+            placeholder.body = BytesIO(msg.get_payload(decode=True)).getvalue()
             new = placeholder
         else:
             content_charset = msg.get_content_charset()
