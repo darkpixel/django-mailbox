@@ -412,14 +412,14 @@ class Mailbox(models.Model):
             )
         msg.save()
         message = self._get_dehydrated_message(message, msg)
-        try:
-            body = message.as_string()
-        except KeyError as exc:
-            # email.message.replace_header may raise 'KeyError' if the header
-            # 'content-transfer-encoding' is missing
-            logger.warning("Failed to parse message: %s", exc,)
-            return None
-        msg.set_body(body)
+#         try:
+#             body = message.as_string()
+#         except KeyError as exc:
+#             # email.message.replace_header may raise 'KeyError' if the header
+#             # 'content-transfer-encoding' is missing
+#             logger.warning("Failed to parse message: %s", exc,)
+#             return None
+#         msg.set_body(body)
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
