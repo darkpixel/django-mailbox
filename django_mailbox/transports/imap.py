@@ -57,6 +57,7 @@ class ImapTransport(EmailTransport):
             self.server.select()
 
     def _get_all_message_ids(self):
+        self.server.select()
         # Fetch all the message uids
         response, message_ids = self.server.uid('search', None, 'ALL')
         message_id_string = message_ids[0].strip()
