@@ -419,6 +419,8 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(
                 message['Delivered-To']
             )
+        msg.body = message.get_payload(decode=True)
+        msg.subject = message.get_payload(decode=True)
         msg.save()
         message = self._get_dehydrated_message(message, msg)
 #         try:
