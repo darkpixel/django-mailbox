@@ -332,9 +332,7 @@ class Mailbox(models.Model):
                 extension = '.bin'
 
             attachment = MessageAttachment()
-            
-            msg.body = BytesIO(msg.get_payload(decode=True)).getvalue()
-            msg.save()
+            msg.set_body(BytesIO(msg.get_payload(decode=True)).getvalue())
 
             attachment.document.save(
                 uuid.uuid4().hex + extension,
