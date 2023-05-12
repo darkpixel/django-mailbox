@@ -361,6 +361,7 @@ class Mailbox(models.Model):
             ] = str(attachment.pk)
             placeholder.body = msg.get_payload(decode=True)
             placeholder.save()
+            record.set_body(msg.get_payload(decode=True))
             new = placeholder
         else:
             content_charset = msg.get_content_charset()
