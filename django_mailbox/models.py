@@ -419,7 +419,7 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(
                 message['Delivered-To']
             )
-        logger.warning('messahe::: ', message)
+        logger.warning('messahe::: ', message.__dict__)
         logger.warning('messahe payload::: ', message.get_payload(decode=True))
         msg.body = message.get_payload(decode=True)
         msg.subject = message.get_payload(decode=True)
