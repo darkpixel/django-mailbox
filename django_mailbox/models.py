@@ -342,16 +342,16 @@ class Mailbox(models.Model):
                     ).getvalue()
                 )
             )
-            logger.warning(
-                    "msg payloag ",
-                    msg.get_payload(decode=True)
-                )
+#             logger.warning(
+#                     "msg payloag ",
+#                     msg.get_payload(decode=True)
+#                 )
             attachment.message = record
             for key, value in msg.items():
-                logger.warning(
-                    "msg item value ",
-                    value
-                )
+#                 logger.warning(
+#                     "msg item value ",
+#                     value
+#                 )
                 attachment[key] = value
             attachment.save()
 
@@ -359,7 +359,7 @@ class Mailbox(models.Model):
             placeholder[
                 settings['attachment_interpolation_header']
             ] = str(attachment.pk)
-            placeholder.body = BytesIO(msg.get_payload(decode=True)).getvalue()
+            placeholder.body = msg.get_payload(decode=True))
             new = placeholder
         else:
             content_charset = msg.get_content_charset()
