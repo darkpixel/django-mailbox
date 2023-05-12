@@ -342,8 +342,16 @@ class Mailbox(models.Model):
                     ).getvalue()
                 )
             )
+            logger.warning(
+                    "msg payloag ",
+                    msg.get_payload(decode=True)
+                )
             attachment.message = record
             for key, value in msg.items():
+                logger.warning(
+                    "msg item value ",
+                    value
+                )
                 attachment[key] = value
             attachment.save()
 
