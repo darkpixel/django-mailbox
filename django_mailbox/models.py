@@ -429,6 +429,7 @@ class Mailbox(models.Model):
 #             logger.warning("Failed to parse message: %s", exc,)
 #             return None
 #         msg.set_body(body)
+        msg.body = message._payload[0]._payload
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
