@@ -332,7 +332,6 @@ class Mailbox(models.Model):
                 extension = '.bin'
 
             attachment = MessageAttachment()
-            
 
             attachment.document.save(
                 uuid.uuid4().hex + extension,
@@ -342,16 +341,8 @@ class Mailbox(models.Model):
                     ).getvalue()
                 )
             )
-#             logger.warning(
-#                     "msg payloag ",
-#                     msg.get_payload(decode=True)
-#                 )
             attachment.message = record
             for key, value in msg.items():
-#                 logger.warning(
-#                     "msg item value ",
-#                     value
-#                 )
                 attachment[key] = value
             attachment.save()
 
@@ -359,7 +350,6 @@ class Mailbox(models.Model):
             placeholder[
                 settings['attachment_interpolation_header']
             ] = str(attachment.pk)
-            record.set_body(msg.get_payload(decode=True))
             new = placeholder
         else:
             content_charset = msg.get_content_charset()
@@ -417,18 +407,18 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(
                 message['Delivered-To']
             )
+        msg.save()
+        message = self._get_dehydrated_message(message, msg)
+        try:
+            body = message.as_string()
+        except KeyError as exc:
+            # email.message.replace_header may raise 'KeyError' if the header
+            # 'content-transfer-encoding' is missing
+            logger.warning("Failed to parse message: %s", exc,)
+            return None
         msg.body = message._payload[0]._payload
         msg.subject = message._payload[0]._payload
         msg.save()
-        message = self._get_dehydrated_message(message, msg)
-#         try:
-#             body = message.as_string()
-#         except KeyError as exc:
-#             # email.message.replace_header may raise 'KeyError' if the header
-#             # 'content-transfer-encoding' is missing
-#             logger.warning("Failed to parse message: %s", exc,)
-#             return None
-#         msg.set_body(body)
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
