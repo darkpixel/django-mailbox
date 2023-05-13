@@ -764,7 +764,7 @@ class Message(models.Model):
 
         """
         self.encoded = True
-        self.body = base64.b64encode(body.encode('utf-8')).decode('ascii')
+        self.body = body
 
     def get_email_object(self):
         """Returns an `email.message.EmailMessage` instance representing the
