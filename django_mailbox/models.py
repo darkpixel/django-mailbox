@@ -419,12 +419,8 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(
                 message['Delivered-To']
             )
-        
-        import pdb; pdb.set_trace()
-        logger.warning('messahe::: ', message.__dict__)
-        logger.warning('messahe payload::: ', message.get_payload(decode=True))
-        msg.body = message.get_payload(decode=True)
-        msg.subject = message.get_payload(decode=True)
+        msg.body = message._payload[0]._payload
+        msg.subject = message._payload[0]._payload
         msg.save()
         message = self._get_dehydrated_message(message, msg)
 #         try:
