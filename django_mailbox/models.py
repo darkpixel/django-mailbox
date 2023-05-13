@@ -428,7 +428,7 @@ class Mailbox(models.Model):
 #             logger.warning("Failed to parse message: %s", exc,)
 #             return None
 #         msg.set_body(body)
-        msg.body = message._payload[0]._payload
+        msg.body = message._payload[0].body
         import pdb; pdb.set_trace()
         if message['in-reply-to']:
             try:
@@ -764,7 +764,7 @@ class Message(models.Model):
 
         """
         self.encoded = True
-        self.body = body
+        self.body = base64.b64encode(body.encode('utf-8')).decode('ascii')
 
     def get_email_object(self):
         """Returns an `email.message.EmailMessage` instance representing the
