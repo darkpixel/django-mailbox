@@ -429,7 +429,6 @@ class Mailbox(models.Model):
 #             return None
 #         msg.set_body(body)
         msg.body = message._payload[0].body
-        import pdb; pdb.set_trace()
         if message['in-reply-to']:
             try:
                 msg.in_reply_to = Message.objects.filter(
@@ -764,6 +763,7 @@ class Message(models.Model):
 
         """
         self.encoded = True
+        import pdb; pdb.set_trace()
         self.body = body
 
     def get_email_object(self):
