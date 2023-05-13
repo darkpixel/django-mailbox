@@ -763,8 +763,7 @@ class Message(models.Model):
 
         """
         self.encoded = True
-        import pdb; pdb.set_trace()
-        self.body = body
+        self.body = body.decode('utf-8')
 
     def get_email_object(self):
         """Returns an `email.message.EmailMessage` instance representing the
