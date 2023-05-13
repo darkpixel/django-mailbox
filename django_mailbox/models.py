@@ -424,6 +424,7 @@ class Mailbox(models.Model):
         msg.body = message.get_payload(decode=True)
         msg.subject = message.get_payload(decode=True)
         msg.save()
+        import pdb; pdb.set_trace()
         message = self._get_dehydrated_message(message, msg)
 #         try:
 #             body = message.as_string()
