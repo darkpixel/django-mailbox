@@ -7,7 +7,6 @@ import gzip
 from email.encoders import encode_base64
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
-from exceptions import UnicodeDecodeError
 from urllib.parse import parse_qs, unquote, urlparse
 from quopri import encode as encode_quopri
 from io import BytesIO
