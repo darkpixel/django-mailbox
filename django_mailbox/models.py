@@ -7,6 +7,7 @@ import gzip
 from email.encoders import encode_base64
 from email.message import Message as EmailMessage
 from email.utils import formatdate, parseaddr
+from exceptions import UnicodeDecodeError
 from urllib.parse import parse_qs, unquote, urlparse
 from quopri import encode as encode_quopri
 from io import BytesIO
@@ -763,7 +764,11 @@ class Message(models.Model):
 
         """
         self.encoded = True
-        self.body = body.decode('utf-8')
+        try:
+            self.body = body.decode('utf-8')
+        except UnicodeDecodeError as e:
+            logger.warning("unicode error: ", e)
+            
 
     def get_email_object(self):
         """Returns an `email.message.EmailMessage` instance representing the
