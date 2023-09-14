@@ -410,16 +410,16 @@ class Mailbox(models.Model):
             msg.to_header = utils.convert_header_to_unicode(message["Delivered-To"])
         msg.save()
         message = self._get_dehydrated_message(message, msg)
-        #         try:
-        #             body = message.as_string()
-        #         except KeyError as exc:
-        #             # email.message.replace_header may raise 'KeyError' if the header
-        #             # 'content-transfer-encoding' is missing
-        #             logger.warning("Failed to parse message: %s", exc,)
-        #             return None
-        #         msg.set_body(body)
+        try:
+            body = message.as_string()
+        except KeyError as exc:
+            # email.message.replace_header may raise 'KeyError' if the header
+            # 'content-transfer-encoding' is missing
+            logger.warning("Failed to parse message: %s", exc)
+            return None
 
-        msg.body = message._payload[0].get_payload()
+        msg.set_body(body)
+
         if message["in-reply-to"]:
             try:
                 msg.in_reply_to = Message.objects.filter(
@@ -729,10 +729,7 @@ class Message(models.Model):
 
         """
         self.encoded = True
-        try:
-            self.body = body.decode("utf-8")
-        except UnicodeDecodeError as e:
-            logger.warning("unicode error: %s", e)
+        self.body = base64.b64encode(str(body).encode("utf-8")).decode("ascii")
 
     def get_email_object(self):
         """Returns an `email.message.EmailMessage` instance representing the
