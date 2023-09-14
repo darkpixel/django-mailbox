@@ -18,18 +18,19 @@ logger = logging.getLogger(__name__)
 
 class ImapTransport(EmailTransport):
     def __init__(
-        self, hostname, port=None, ssl=False, tls=False,
-        archive='', folder=None,
+        self,
+        hostname,
+        port=None,
+        ssl=False,
+        tls=False,
+        archive="",
+        folder=None,
     ):
         self.max_message_size = getattr(
-            settings,
-            'DJANGO_MAILBOX_MAX_MESSAGE_SIZE',
-            False
+            settings, "DJANGO_MAILBOX_MAX_MESSAGE_SIZE", False
         )
         self.integration_testing_subject = getattr(
-            settings,
-            'DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT',
-            None
+            settings, "DJANGO_MAILBOX_INTEGRATION_TESTING_SUBJECT", None
         )
         self.hostname = hostname
         self.port = port
@@ -45,6 +46,10 @@ class ImapTransport(EmailTransport):
             if not self.port:
                 self.port = 143
 
+    def disconnect(self):
+        self.server.close()
+        self.server.logout()
+
     def connect(self, username, password):
         self.server = self.transport(self.hostname, self.port)
         if self.tls:
@@ -59,13 +64,13 @@ class ImapTransport(EmailTransport):
     def _get_all_message_ids(self):
         self.server.select()
         # Fetch all the message uids
-        response, message_ids = self.server.uid('search', None, 'ALL')
+        response, message_ids = self.server.uid("search", None, "ALL")
         message_id_string = message_ids[0].strip()
         # Usually `message_id_string` will be a list of space-separated
         # ids; we must make sure that it isn't an empty string before
         # splitting into individual UIDs.
         if message_id_string:
-            return message_id_string.decode().split(' ')
+            return message_id_string.decode().split(" ")
         return []
 
     def _get_small_message_ids(self, message_ids):
@@ -74,23 +79,17 @@ class ImapTransport(EmailTransport):
         # limit
         safe_message_ids = []
 
-        status, data = self.server.uid(
-            'fetch',
-            ','.join(message_ids),
-            '(RFC822.SIZE)'
-        )
+        status, data = self.server.uid("fetch", ",".join(message_ids), "(RFC822.SIZE)")
 
         for each_msg in data:
             each_msg = each_msg.decode()
             try:
-                uid = each_msg.split(' ')[2]
-                size = each_msg.split(' ')[4].rstrip(')')
+                uid = each_msg.split(" ")[2]
+                size = each_msg.split(" ")[4].rstrip(")")
                 if int(size) <= int(self.max_message_size):
                     safe_message_ids.append(uid)
             except ValueError as e:
-                logger.warning(
-                    "ValueError: {} working on {}".format(e, each_msg[0])
-                )
+                logger.warning("ValueError: {} working on {}".format(e, each_msg[0]))
                 pass
         return safe_message_ids
 
@@ -112,7 +111,7 @@ class ImapTransport(EmailTransport):
 
         for uid in message_ids:
             try:
-                typ, msg_contents = self.server.uid('fetch', uid, '(RFC822)')
+                typ, msg_contents = self.server.uid("fetch", uid, "(RFC822)")
                 if not msg_contents:
                     continue
                 try:
@@ -131,8 +130,8 @@ class ImapTransport(EmailTransport):
                 continue
 
             if self.archive:
-                self.server.uid('copy', uid, self.archive)
+                self.server.uid("copy", uid, self.archive)
 
-            self.server.uid('store', uid, "+FLAGS", "(\\Deleted)")
+            self.server.uid("store", uid, "+FLAGS", "(\\Deleted)")
         self.server.expunge()
         return

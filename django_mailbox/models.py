@@ -458,7 +458,7 @@ class Mailbox(models.Model):
             self.save(update_fields=["last_polling"])
         else:
             self.save()
-        connection.close()
+        connection.disconnect()
 
     @staticmethod
     def get_new_mail_all_mailboxes(args=None):
