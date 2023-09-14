@@ -767,7 +767,13 @@ class Message(models.Model):
         """Delete this message and all stored attachments."""
         for attachment in self.attachments.all():
             # This attachment is attached only to this message.
-            attachment.delete()
+            try:
+                attachment.delete()
+            except ValueError:
+                # This can occur with an attachment that has no file associated
+                # with it
+                pass
+
         return super().delete(*args, **kwargs)
 
     def __str__(self):
