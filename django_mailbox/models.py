@@ -395,38 +395,35 @@ class Mailbox(models.Model):
         msg._email_object = message
         settings = utils.get_settings()
 
-        if settings['store_original_message']:
+        if settings["store_original_message"]:
             self._process_save_original_message(message, msg)
         msg.mailbox = self
-        if 'subject' in message:
-            msg.subject = (
-                utils.convert_header_to_unicode(message['subject'])[0:255]
-            )
-        if 'message-id' in message:
-            msg.message_id = message['message-id'][0:255].strip()
-        if 'from' in message:
-            msg.from_header = utils.convert_header_to_unicode(message['from'])
-        if 'to' in message:
-            msg.to_header = utils.convert_header_to_unicode(message['to'])
-        elif 'Delivered-To' in message:
-            msg.to_header = utils.convert_header_to_unicode(
-                message['Delivered-To']
-            )
+        if "subject" in message:
+            msg.subject = utils.convert_header_to_unicode(message["subject"])[0:255]
+        if "message-id" in message:
+            msg.message_id = message["message-id"][0:255].strip()
+        if "from" in message:
+            msg.from_header = utils.convert_header_to_unicode(message["from"])
+        if "to" in message:
+            msg.to_header = utils.convert_header_to_unicode(message["to"])
+        elif "Delivered-To" in message:
+            msg.to_header = utils.convert_header_to_unicode(message["Delivered-To"])
         msg.save()
         message = self._get_dehydrated_message(message, msg)
-#         try:
-#             body = message.as_string()
-#         except KeyError as exc:
-#             # email.message.replace_header may raise 'KeyError' if the header
-#             # 'content-transfer-encoding' is missing
-#             logger.warning("Failed to parse message: %s", exc,)
-#             return None
-#         msg.set_body(body)
-        msg.body = message._payload[0].body
-        if message['in-reply-to']:
+        #         try:
+        #             body = message.as_string()
+        #         except KeyError as exc:
+        #             # email.message.replace_header may raise 'KeyError' if the header
+        #             # 'content-transfer-encoding' is missing
+        #             logger.warning("Failed to parse message: %s", exc,)
+        #             return None
+        #         msg.set_body(body)
+
+        msg.body = message._payload[0].get_payload()
+        if message["in-reply-to"]:
             try:
                 msg.in_reply_to = Message.objects.filter(
-                    message_id=message['in-reply-to'].strip()
+                    message_id=message["in-reply-to"].strip()
                 )[0]
             except IndexError:
                 pass
