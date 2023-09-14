@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 class MailboxQuerySet(models.QuerySet):
     def get_new_mail(self):
         count = 0
-        for mailbox in self.all():
+        for mailbox in self.filter(active=True):
             logger.debug("Receiving mail for %s" % mailbox)
             count += sum(1 for i in mailbox.get_new_mail())
         logger.debug("Received %d %s.", count, "mails" if count != 1 else "mail")
@@ -679,6 +679,9 @@ class Message(models.Model):
                 if encoding and encoding.lower() == "quoted-printable":
                     # Cannot use `email.encoders.encode_quopri due to
                     # bug 14360: http://bugs.python.org/issue14360
+                    # This bug was closed in 2013.  The django-mailbox
+                    # developers keep complaining they have no time to fix
+                    # stuff, then make helping a bureaucratic nightmare.
                     output = BytesIO()
                     encode_quopri(
                         BytesIO(attachment.document.read()),
